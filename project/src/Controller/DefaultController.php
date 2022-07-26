@@ -10,7 +10,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
 use App\Entity\User;
-
+use App\Entity\Video;
 use App\Services\GiftsService;
 use Zend\Crypt\Exception\NotFoundException;
 
@@ -18,6 +18,35 @@ class DefaultController extends Controller
 {
 
     public function __construct($logger){
+
+    }
+
+
+    /**
+     * 
+     * @Route("/Followers", name="followers")
+     */
+    public function followers(){
+        $entityManager = $this->getDoctrine()->getManager();
+
+        
+        $user = new User();
+        $user->setName("Alessio");
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        $user = new User();
+        $user->setName("Robert");
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+
+        $user = new User();
+        $user->setName("Alex");
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        exit('A new user was saved with the id of'.$user->getId());
 
     }
 
@@ -48,6 +77,44 @@ class DefaultController extends Controller
 
         exit('A new user was saved with the id of'.$user->getId());
 
+    }
+
+    /**
+     * 
+     * @Route("/UserVideos", name="create-user-videos")
+     */
+    public function create_user_videos(){
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $user = new User();
+        $user->setName("Alessio");
+        $entityManager->persist($user);
+
+        for($i=1; $i<=3; $i++)
+        {
+            $video = new Video();
+            $video->setTitle('title - '.$i);
+            $user->addVideo($video);
+            $entityManager->persist($video);
+        }
+        $entityManager->persist($user);
+        $entityManager->flush();
+        exit('User with video saved');
+    }
+
+    /**
+     * 
+     * @Route("/Videos/{id}", name="get-videos-user")
+     */
+    public function get_videos_user($id){
+        $repository = $this->getDoctrine()->getRepository(Video::class);
+        
+        $videos = $repository->findBy(['user' => $id]);
+        $res='';
+        foreach($videos as $video){
+            $res=$res.$video->getUser()->getName();
+        }
+        exit($res);
     }
 
     /**
@@ -128,6 +195,23 @@ class DefaultController extends Controller
     public function param_converter(User $user)
     {
         exit($user->getName());
+    }
+    
+
+    /**
+     * @Route("/Videos", name="videos")
+     */
+    public function getVideos()
+    {
+        
+        $videos = $this->getDoctrine()->getRepository(Video::class)->findAll();
+
+        if(!$videos)
+        {
+            throw $this->createNotFoundException('The videos do not exist');
+
+        }
+        exit("found videos");                
     }
 
 
