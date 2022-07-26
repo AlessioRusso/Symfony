@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Entity\User;
 
 use App\Services\GiftsService;
-
+use Zend\Crypt\Exception\NotFoundException;
 
 class DefaultController extends Controller
 {
@@ -27,33 +27,109 @@ class DefaultController extends Controller
      */
     public function index()
     {
-        
-        $entityManager = $this->getDoctrine()->getManager();
-        
-        $user = new User;
-        $user->setName('Adam');
-       
-        $user2 = new User;
-        $user2->setName('Robert');
-       
-        $user3 = new User;
-        $user3->setName('John');
-        
-        $user4 = new User;
-        $user4->setName('Susan');
-
-        $entityManager->persist($user);
-        $entityManager->persist($user2);
-        $entityManager->persist($user3);
-        $entityManager->persist($user4);
-
-        exit($entityManager->flush());
-
         return $this->render('default/index.html.twig', [
             'controller_name' => 'DefaultController',
             'users' => [],
         ]);
     }
+
+
+    /**
+     * 
+     * @Route("/User", name="create-user")
+     */
+    public function create_user(){
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $user = new User();
+        $user->setName("Alessio");
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        exit('A new user was saved with the id of'.$user->getId());
+
+    }
+
+    /**
+     * 
+     * @Route("/User/{id}", name="get_user_by_id")
+     * 
+     */
+    public function get_user_by_id($id)
+    {
+        $repository = $this->getDoctrine()->getRepository(User::class);
+        $user = $repository->find($id);
+        exit($user->getName());
+    }
+
+
+    /**
+     *@Route("/UpdateUser/{id}", name="update_user_by_id") 
+     */
+    public function update_user_by_id($id)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()->getRepository(User::class);
+
+        $user = $repository->find($id);
+
+        if(!$user)
+        {
+            throw $this->createNotFoundException('User not_exist');
+        }
+
+        $user->setName("New name");
+        $entityManager->persist($user);
+        $entityManager->flush();
+        exit($user->getName());
+    }
+
+    // /**
+    //  * @Route("/raw-query/", name="raw_query")
+    //  */
+
+    //  public function raw_query()
+    //  {
+    //     $entityManager = $this->getDoctrine()->getManager();
+    //     $conn = $entityManager->getConnection();
+    //     $sql = '
+    //         SELECT * FROM user
+    //         Where user.id > :id
+    //     ';
+
+    //     $stmt = $conn->prepare($sql);
+    //     $stmt->execute(['id' => 3]);
+    //     exit('exec');
+    //  }
+
+    /**
+     * @Route("/DeleteUser/{id}", name = "delete_user")
+     */
+    public function delete_user($id)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()->getRepository(User::class);
+
+        $user = $repository->find($id);
+
+        if(!$user){
+            $this->createNotFoundException("User does not exist");
+        }
+
+        $entityManager->remove($user);
+        $entityManager->flush();
+        exit('User deleted');
+    }
+
+
+    /**
+     * @Route("/param-converter/{id}", name = "param_converter")
+     */
+    public function param_converter(User $user)
+    {
+        exit($user->getName());
+    }
+
 
     /**
      * @Route("/Users", name="users")
@@ -68,18 +144,7 @@ class DefaultController extends Controller
             throw $this->createNotFoundException('The users do not exist');
 
         }
-        
-
-        // $this->addFlash(
-        //     'notice',
-        //     'Your changes were saved!'
-        // );
-        
-        // $this->addFlash(
-        //     'warning',
-        //     'Your changes were saved!' 
-        // );
-        
+                
 
         return $this->render('default/index.html.twig', [
             'controller_name' => 'DefaultController',

@@ -6,9 +6,19 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class User
 {
+    /**
+     * @ORM\PrePersist
+     * 
+     */
+    public function setCreatedAt()
+    {
+        $this->CreatedAt = new \DateTime();
+    }
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
