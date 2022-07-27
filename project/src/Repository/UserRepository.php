@@ -22,7 +22,7 @@ class UserRepository extends ServiceEntityRepository
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */
-    /*
+    /* 
     public function findByExampleField($value)
     {
         return $this->createQueryBuilder('u')
@@ -35,6 +35,20 @@ class UserRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    
+    public function findWithVideos($id): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->innerJoin('u.videos', 'v')
+            ->addSelect('v') // eager loading
+            ->andWhere('u.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+    
 
     /*
     public function findOneBySomeField($value): ?User

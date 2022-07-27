@@ -6,12 +6,15 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
 use App\Entity\User;
 use App\Entity\Video;
 use App\Services\GiftsService;
+use App\Repository\UserRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Zend\Crypt\Exception\NotFoundException;
 
 class DefaultController extends Controller
@@ -55,7 +58,8 @@ class DefaultController extends Controller
      * @Route("/default", name="default")
      */
     public function index()
-    {
+    {   
+        dump('abc');
         return $this->render('default/index.html.twig', [
             'controller_name' => 'DefaultController',
             'users' => [],
@@ -88,19 +92,20 @@ class DefaultController extends Controller
 
         $user = new User();
         $user->setName("Alessio");
-        $entityManager->persist($user);
-
+      
         for($i=1; $i<=3; $i++)
         {
             $video = new Video();
             $video->setTitle('title - '.$i);
             $user->addVideo($video);
             $entityManager->persist($video);
+
         }
         $entityManager->persist($user);
         $entityManager->flush();
-        exit('User with video saved');
+        dump($user);
     }
+
 
     /**
      * 
@@ -125,8 +130,8 @@ class DefaultController extends Controller
     public function get_user_by_id($id)
     {
         $repository = $this->getDoctrine()->getRepository(User::class);
-        $user = $repository->find($id);
-        exit($user->getName());
+        $user = $repository->findWithVideos($id);
+        dump($user);
     }
 
 
@@ -211,7 +216,7 @@ class DefaultController extends Controller
             throw $this->createNotFoundException('The videos do not exist');
 
         }
-        exit("found videos");                
+        dump($videos);                
     }
 
 
