@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-class MySecondService
+class MySecondService implements ServiceInterface
 {
     public function __construct()
     {

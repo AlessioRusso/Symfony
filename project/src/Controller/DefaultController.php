@@ -6,8 +6,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
-use App\Services\MyService;
-
+use App\Services\ServiceInterface;
+use App\Services\TagService;
 
 class DefaultController extends Controller
 {
@@ -20,9 +20,12 @@ class DefaultController extends Controller
     /**
      * @Route("/default", name="default")
      */
-    public function index(Request $request, MyService $service)
+    public function index(Request $request, ServiceInterface $service)
     {
-        $service->someAction();
+
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $entityManager->flush();
         return $this->render('default/index.html.twig', [
             'controller_name' => 'DefaultController',
             'users' => [],

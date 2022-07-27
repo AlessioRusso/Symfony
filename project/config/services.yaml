@@ -31,6 +31,8 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    App\Services\ServiceInterface: '@App\Services\MySecondService'
+
     App\Controller\DefaultController:
         bind:
             $logger: '@monolog.logger.doctrine'
@@ -40,4 +42,9 @@ services:
         arguments:
             $param: 'some parameter'
             $adminEmail: '%admin_email%'
+
+    App\Services\TagService:
+        tags:
+            - { name: doctrine.event_listener, event: postFlush }
+            - { name: kernel.cache_clearer }
         

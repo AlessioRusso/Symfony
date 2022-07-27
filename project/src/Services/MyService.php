@@ -2,12 +2,14 @@
 
 namespace App\Services;
 
+use App\Services\ServiceInterface;
+
 use App\Services\OptionalServiceTrait;
 
-class MyService
+class MyService implements ServiceInterface
 {
     
-    use OptionalServiceTrait;
+    //use OptionalServiceTrait;
 
     public function __construct($param, $adminEmail, $globalParam)
     {
