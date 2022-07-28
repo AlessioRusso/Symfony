@@ -23,10 +23,14 @@
     </ul>
     {% endfor %}
 
-    {% for message in app.flashes('notice') %}
-    <div class = "flash-notice">
-        {{message}}
-    </div>
-</div>
-    {% endfor %}
+    {{form(form)}}
+
+    {% if app.user %}
+
+    <a href="{{path('logout')}}"> logout </a>
+
+    {% endif %}
+
+</div>}
+  
 {% endblock %}
