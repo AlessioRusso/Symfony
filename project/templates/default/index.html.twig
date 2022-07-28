@@ -23,10 +23,17 @@
     </ul>
     {% endfor %}
 
-    {% for message in app.flashes('notice') %}
-    <div class = "flash-notice">
-        {{message}}
     </div>
+
+    {% form_theme form 'form_table_layout.html.twig' %}
+    {# {{ form_start(form) }}
+
+    {{ form_widget(form) }}
+
+    {{ form_end(form) }} #}
+
+    {{ form(form) }}
+
 </div>
-    {% endfor %}
+  
 {% endblock %}

@@ -9,13 +9,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
-use App\Entity\User;
+use App\Entity\Video;
 
 use App\Events\VideoCreatedEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use App\Form\VideoFormType;
 
 use App\Services\GiftsService;
-
+use DateTime;
 
 class DefaultController extends Controller
 {
@@ -29,20 +30,32 @@ class DefaultController extends Controller
     /**
      * @Route("/default", name="default")
      */
-    public function index()
+    public function index(Request $request)
     {
-        $video = new \stdClass();
+        
 
-        $video->title = 'Funny movie';
-        $video->category = 'funny';
+        $entityManager = $this->getDoctrine()->getManager();
+        $videos = $entityManager->getRepository(Video::class)->findAll();
+        dump($videos);
 
-        $event = new VideoCreatedEvent($video);
+        $video = new Video();
+        // $video->setTitle('lotr');
+        // $video->setCreatedAt(new DateTime('tomorrow'));
 
-        $this->dispatcher->dispatch('video.created.event', $event);
-
+        $form = $this->createForm(VideoFormType::class, $video);
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) { 
+            $entityManager->persist($video);
+            $entityManager->flush();
+            return $this->redirectToRoute('default');
+            
+        }
+        
         return $this->render('default/index.html.twig', [
             'controller_name' => 'DefaultController',
             'users' => [],
+            'form' => $form->createView(),
         ]);
     }
 }
