@@ -31,3 +31,7 @@ services:
         bind:
             $logger: '@monolog.logger.doctrine'
 
+    App\Listeners\VideoCreatedListener:
+        tags:
+            - {name: kernel.event_listener,  event: video.created.event} # own event that does not exist in symfony
+
