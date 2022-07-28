@@ -17,6 +17,7 @@ use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Zend\Crypt\Exception\NotFoundException;
 
+use App\DataFixtures\AppFixtures;
 class DefaultController extends Controller
 {
 
